@@ -1,13 +1,4 @@
-# react-redux-boilerplate
-React starter boilerplate for client and server rendering (Universal)
-# Features
-
-- [React](https://github.com/facebook/react)
-- [React Router](https://github.com/rackt/react-router)
-- [React Router Redux](https://github.com/reactjs/react-router-redux)
-- [Redux](https://github.com/rackt/redux)
-- [Node sass](https://github.com/sass/node-sass)
-- [Mocha](https://github.com/mochajs/mocha)
+# My Wallet app with react+firebase
 
 # Getting Started
 ```
