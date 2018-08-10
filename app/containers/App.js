@@ -1,4 +1,3 @@
-
 import React, { Component, PropTypes } from 'react'
 import { Link } from 'react-router'
 import Helmet from 'react-helmet'
@@ -14,44 +13,52 @@ class App extends React.Component {
     page: 'home',
     category: null,
     itemList: null,
-    user: null,
-  };
+    user: null
+  }
 
   componentDidMount = () => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({
           user: user,
-          page: 'home',
+          page: 'home'
         })
-        this.fetchData(user.email)
+        this.fetchData(user)
       } else {
         this.setState({
-          page: 'login',
+          page: 'login'
         })
       }
     })
-  };
+  }
 
   onChangePage = (pageActive) => {
     this.setState({ page: pageActive })
-  };
+  }
 
-  fetchData = (userName) => {
-    firebase.database().ref().child('category').on('value', (data) => {
-      this.setState({
-        category: data.val(),
-      })
-    })
-    firebase.database().ref().child('itemlists')
-      .orderByChild('user')
-      .startAt(userName)
-      .endAt(userName)
+  fetchData = (user) => {
+    firebase
+      .database()
+      .ref()
+      .child('categories')
+      .orderByChild('user_id')
+      .equalTo(user.uid)
       .on('value', (data) => {
         this.setState({
-          itemList: this.convertObjectToArray(data.val()),
+          category: data.val()
         })
-      });
+      })
+    firebase
+      .database()
+      .ref()
+      .child('itemlists')
+      .orderByChild('user_id')
+      .equalTo(user.uid)
+      .on('value', (data) => {
+        this.setState({
+          itemList: this.convertObjectToArray(data.val())
+        })
+      })
     // firebase.database().ref().child('itemlists').on('value', (data) => {
     //   this.setState({
     //     itemList: this.convertObjectToArray(data.val()),
@@ -68,37 +75,43 @@ class App extends React.Component {
       }
       itemList.push(item)
     }
-    return itemList;
-  };
+    return itemList
+  }
 
-  render() {
+  render () {
     const { page, category, itemList, user } = this.state
-    let pageComponent = '';
+    let pageComponent = ''
     switch (page) {
       case 'home':
-        pageComponent = (<Home user={user} categoryList={category} itemList={itemList} />)
-        break;
+        pageComponent = (
+          <Home user={user} categoryList={category} itemList={itemList} />
+        )
+        break
       case 'category':
-        pageComponent = (<Category categoryList={category} />)
-        break;
+        pageComponent = <Category user={user} categoryList={category} />
+        break
       case 'overview':
-        pageComponent = (<Overview categoryList={category} itemList={itemList} />)
-        break;
+        pageComponent = <Overview categoryList={category} itemList={itemList} />
+        break
       case 'login':
-        pageComponent = (<Login fetchData={this.fetchData} />)
-      default: break;
+        pageComponent = <Login fetchData={this.fetchData} />
+      default:
+        break
     }
     return (
       <div>
-        <Helmet title="My Wallet" />
+        <Helmet title='My Wallet' />
         <br />
-        {
-          page !== 'login' &&
-          <div className="container">
-            <AppHeader user={user} pageActive={page} onChangePage={this.onChangePage} />
+        {page !== 'login' && (
+          <div className='container'>
+            <AppHeader
+              user={user}
+              pageActive={page}
+              onChangePage={this.onChangePage}
+            />
             <br />
           </div>
-        }
+        )}
         {pageComponent}
       </div>
     )
